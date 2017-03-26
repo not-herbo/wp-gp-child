@@ -7,8 +7,8 @@ phpunit.xml
 assets/bower
 # ignore all files that start with ~
 ~
-.map
-.min.*
+*.map
+*.min.*
 assets/css/*.css
 assets/js/*.js
 
