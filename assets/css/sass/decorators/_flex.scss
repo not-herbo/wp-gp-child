@@ -1,0 +1,74 @@
+// flex X axis - Y axis
+
+@mixin deco_flex_stretch {
+	display: flex;
+	align-items: stretch;
+}
+
+@mixin deco_flex_columns {
+	flex-direction: column;
+}
+
+@mixin deco_flex_start_start {
+	display: flex;
+	justify-content: flex-start;
+	align-items: flex-start;
+}
+
+@mixin deco_flex_start_end {
+	display: flex;
+	justify-content: flex-end;
+	align-items: flex-start;
+}
+
+@mixin deco_flex_end_center {
+	display: flex;
+	justify-content: flex-end;
+	align-items: center;
+}
+
+@mixin deco_flex_start_center {
+	display: flex;
+	justify-content: flex-start;
+	align-items: center;
+}
+
+@mixin deco_flex_center_space_around() {
+	display: flex;
+	align-items: center;
+	justify-content: space-around;
+	flex-direction: row;
+}
+
+@mixin deco_flex_start_space_between() {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	flex-direction: row;
+}
+
+@mixin deco_flex_center_space_between() {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	flex-direction: row;
+}
+
+@mixin deco_flex_center_center() {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: row;
+}
+
+@mixin deco_flex_center_start(){
+	display: flex;
+	justify-content: center;
+	align-items: flex-start;
+}
+
+@mixin deco_flex_center_end(){
+	display: flex;
+	justify-content: center;
+	align-items: flex-end;
+}

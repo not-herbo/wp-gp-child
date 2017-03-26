@@ -1,0 +1,9 @@
+//Header Components
+.test-decorators-bg {
+  @include deco_backgrounds_box_shadow_underneath;
+
+  @include for-desktop-up {
+    margin-bottom: 20px;
+  }
+
+}
