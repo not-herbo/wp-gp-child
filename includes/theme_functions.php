@@ -1,4 +1,75 @@
 <?php
+/**
+ * Enqueue scripts and styles
+ */
+add_action( 'wp_enqueue_scripts', 'generate_scripts' );
+function generate_scripts()
+{
+	// Get our options.
+	$generate_settings = wp_parse_args(
+		get_option( 'generate_settings', array() ),
+		generate_get_defaults()
+	);
+
+	// Get the minified suffix.
+	$suffix = generate_get_min_suffix();
+
+	// Enqueue our CSS.
+	//wp_enqueue_style( 'generate-style-grid', get_template_directory_uri() . "/css/unsemantic-grid{$suffix}.css", false, GENERATE_VERSION, 'all' );
+	wp_enqueue_style( 'generate-style', get_template_directory_uri() . '/style.css', false, GENERATE_VERSION, 'all' );
+	//wp_enqueue_style( 'generate-mobile-style', get_template_directory_uri() . "/css/mobile{$suffix}.css", array( 'generate-style' ), GENERATE_VERSION, 'all' );
+
+	// Add the child theme CSS if child theme is active.
+	if ( is_child_theme() ) {
+		wp_enqueue_style( 'generate-child', get_stylesheet_uri(), array( 'generate-style' ), filemtime( get_stylesheet_directory() . '/style.css' ), 'all' );
+	}
+
+	// Font Awesome
+	$icon_essentials = apply_filters( 'generate_fontawesome_essentials', false );
+	$icon_essentials = ( $icon_essentials ) ? '-essentials' : false;
+	wp_enqueue_style( "fontawesome{$icon_essentials}", get_template_directory_uri() . "/css/font-awesome{$icon_essentials}{$suffix}.css", false, '4.7', 'all' );
+
+	// IE 8
+	wp_enqueue_style( 'generate-ie', get_template_directory_uri() . "/css/ie{$suffix}.css", false, GENERATE_VERSION, 'all' );
+	wp_style_add_data( 'generate-ie', 'conditional', 'lt IE 9' );
+
+	// Add jQuery
+	wp_enqueue_script( 'jquery' );
+
+	// Add our mobile navigation
+	wp_enqueue_script( 'generate-navigation', get_template_directory_uri() . "/js/navigation{$suffix}.js", array( 'jquery' ), GENERATE_VERSION, true );
+
+	// Add our hover or click dropdown menu scripts
+	$click = ( 'click' == $generate_settings[ 'nav_dropdown_type' ] || 'click-arrow' == $generate_settings[ 'nav_dropdown_type' ] ) ? '-click' : '';
+	wp_enqueue_script( 'generate-dropdown', get_template_directory_uri() . "/js/dropdown{$click}{$suffix}.js", array( 'jquery' ), GENERATE_VERSION, true );
+
+	// Add our navigation search if it's enabled
+	if ( 'enable' == $generate_settings['nav_search'] ) {
+		wp_enqueue_script( 'generate-navigation-search', get_template_directory_uri() . "/js/navigation-search{$suffix}.js", array( 'jquery' ), GENERATE_VERSION, true );
+	}
+
+	// Add the back to top script if it's enabled
+	if ( 'enable' == $generate_settings['back_to_top'] ) {
+		wp_enqueue_script( 'generate-back-to-top', get_template_directory_uri() . "/js/back-to-top{$suffix}.js", array( 'jquery' ), GENERATE_VERSION, true );
+	}
+
+	// Move the navigation from below the content on mobile to below the header if it's in a sidebar
+	if ( 'nav-left-sidebar' == generate_get_navigation_location() || 'nav-right-sidebar' == generate_get_navigation_location() ) {
+		wp_enqueue_script( 'generate-move-navigation', get_template_directory_uri() . "/js/move-navigation{$suffix}.js", array( 'jquery' ), GENERATE_VERSION, true );
+	}
+
+	// IE 8
+	if ( function_exists( 'wp_script_add_data' ) ) {
+		wp_enqueue_script( 'generate-html5', get_template_directory_uri() . "/js/html5shiv{$suffix}.js", array( 'jquery' ), GENERATE_VERSION, true );
+		wp_script_add_data( 'generate-html5', 'conditional', 'lt IE 9' );
+	}
+
+	// Add the threaded comments script
+	if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {
+		wp_enqueue_script( 'comment-reply' );
+	}
+}
+
 //REMOVE THOSE FUCKING ANNOYING INLINE STYLES
 add_action( 'wp_print_styles', function()
 {
@@ -7,20 +78,32 @@ add_action( 'wp_print_styles', function()
 
 } );
 
-// function wp_generatepress_dequeue_styles() {
-//
-//     //wp_deregister_style( 'generate-style-grid' ); //remove grid
-//     wp_deregister_style( 'generate-style-inline' );
-//     //wp_deregister_style( 'generate-style' ); //remove base css
-//     wp_deregister_style( 'generate-fonts' ); //remove gfont css
-//
-//
-// }
+//Set Pages to Full Width
+function generate_add_body_class( $classes ) {
+  $classes[] = 'full-width-content';
+  return $classes;
+}
+add_filter( 'body_class','generate_add_body_class' );
 
-//add_action( 'wp_enqueue_scripts', 'wp_generatepress_dequeue_styles', 99 );
+//Add Placeholder text to search...
+add_action( 'after_setup_theme','tu_change_nav_placeholder' );
+function tu_change_nav_placeholder()
+{
+	remove_action( 'generate_inside_navigation','generate_navigation_search');
+	add_action( 'generate_inside_navigation','tu_navigation_search', 5 );
+}
 
-//remove_action( 'wp_enqueue_scripts','generate_add_base_inline_css', 99 );
+function tu_navigation_search()
+{
+	if ( function_exists( 'generate_get_setting' ) && 'enable' !== generate_get_setting( 'nav_search' ) )
+		return;
 
+	?>
+	<form method="get" class="search-form navigation-search" action="<?php echo esc_url( home_url( '/' ) ); ?>">
+		<input type="search" placeholder="YOUR PLACEHOLDER HERE" class="search-field" value="<?php echo esc_attr( get_search_query() ); ?>" name="s" title="<?php _ex( 'Search', 'label', 'generatepress' ); ?>">
+	</form>
+	<?php
+}
 
 // Add page slug to body class, love this - Credit: Starkers Wordpress Theme
 if (!(function_exists('figjam_add_slug_to_body_class'))) {
