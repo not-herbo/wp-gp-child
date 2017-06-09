@@ -1,0 +1,10 @@
+{
+  "name": "wpgpc",
+  "version": "1.0.0",
+  "author": "Adam Butterworth",
+  "devDependencies": {
+  },
+  "dependencies": {
+    "jquery": "^3.2.1"
+  }
+}

@@ -6,7 +6,7 @@ module.exports = {
 		}
 	},
 	css: {
-		files: ['assets/css/sass/**/*.scss'],
+		files: ['assets/css/scss/**/*.scss'],
 		tasks: ['css'],
 		options: {
 			debounceDelay: 500

@@ -5,7 +5,7 @@ module.exports = {
 			sourceMap: true
 		},
 		files: {
-			'assets/css/project.css': 'assets/css/sass/project.scss'
+			'assets/css/project.css': 'assets/css/scss/project.scss'
 		}
 	}
 };
